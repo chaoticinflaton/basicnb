@@ -91,7 +91,7 @@ for i in range(nsteps):
     plt.savefig('./nbs/' + str(i).zfill(5) + '.png')
     plt.close()
     
-del x,y,z,vx,vy,vz,total_f_x,total_f_y,total_f_z,dx,dy,dz # Free up space
+del x,y,z,vx,vy,vz,r,v,dr_ij,force,den # Free up space
 
 # Create gif.
 import imageio
