@@ -10,7 +10,8 @@ import os
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-os.mkdir('nbs')
+if not os.path.exists('nbs'): 
+    os.mkdir('nbs')
 
 g = 0.05 # Gravitational force strength
 dt = 0.01 # Timestep
