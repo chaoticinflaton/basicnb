@@ -49,6 +49,9 @@ vy = np.reshape(vy,(len(x),1))
 vz = v[:,2]
 vz = np.reshape(vz,(len(x),1))
 
+r = np.array([x,y,z])
+v = np.array([vx,vy,vz])
+
 # Start time computation now. 
 # Uses leapfrog integration. 
 # First, the new positions are computed using the current velocity.
@@ -60,40 +63,21 @@ for i in range(nsteps):
     print i
     
     # Update position and impose periodic BCs by wrapping. 
+    r = (r + v*dt)%l
     
-    x = (x + vx*dt)%l
-    y = (y + vy*dt)%l
-    z = (z + vz*dt)%l
+    # Compute pairwise distances in each dimension
+    dr_ij = np.array([el - el.transpose() for el in r])
     
-    # This is a numpy-way to generate an array which gives the pairwise distances 
-    # dx(i,j) = (x_i - x_j)
-
-    dx = x - x.transpose()
-    dy = y - y.transpose()
-    dz = z - z.transpose()
+    # Calculate |r|^(3/2) for each pair. 
+    den = np.power(np.sum(dr_ij**2,axis=0),1.5) + soft_len
     
+    # Finally, calculate force but summing over all source particles for
+    # each particle. 
+    force = g*np.sum(dr_ij / den,axis=1)
+    force = np.reshape(force,(3,npart,1))
     
-    # Denominator for force expression
-    mod = np.power(dx*dx + dy*dy + dz*dz + soft_len,1.5)
-    
-    # Vector components of force
-    fx = dx/mod
-    fy = dy/mod
-    fz = dz/mod
-    
-    # Summed over all particles, for each particle
-    total_f_x = g*np.sum(fx,axis=0)
-    total_f_y = g*np.sum(fy,axis=0)
-    total_f_z = g*np.sum(fz,axis=0)
-    
-    total_f_x = np.reshape(total_f_x,(len(total_f_x),1))
-    total_f_y = np.reshape(total_f_y,(len(total_f_x),1))
-    total_f_z = np.reshape(total_f_z,(len(total_f_x),1))
-    
-    # Updating velocities using force calculated at NEW positions. 
-    vx = vx + total_f_x*dt
-    vy = vy + total_f_y*dt
-    vz = vz + total_f_z*dt
+    # Update velocities using new force. 
+    v = v + force*dt
     
     # Plotting 
     fig = plt.figure()
