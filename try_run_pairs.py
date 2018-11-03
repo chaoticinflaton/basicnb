@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-
 Basic N-Body Simulator
 
 Creates a gif in the nbs folder at the current location. 
-
-Please create folder beforehand. 
-
 """
 
 import numpy as np
+import os
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+
+os.mkdir('nbs')
 
 g = 0.05 # Gravitational force strength
 dt = 0.01 # Timestep
@@ -83,7 +82,7 @@ for i in range(nsteps):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
     
-    ax.scatter(x,y,z)
+    ax.scatter(r[0],r[1],r[2])
     ax.set_xlim(0,1)
     ax.set_ylim(0,1)
     ax.set_zlim(0,1)
